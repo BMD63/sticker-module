@@ -1,6 +1,19 @@
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import { useCats } from '~/composables/useCats'
+
+const { images, loading, error, loadCats } = useCats()
+
+onMounted(() => {
+  loadCats(3) 
+})
+</script>
+
 <template>
   <main class="sticker-page">
     <h1 class="title">Демонстрация стикера</h1>
+    <p v-if="loading">Загружаем изображения…</p>
+    <p v-else-if="error">Ошибка: {{ error }}</p>
     <section v-for="i in 12" :key="i" class="section">
       <h2>Раздел {{ i }}</h2>
       <p>
@@ -12,7 +25,14 @@
       </p>
     </section>
   </main>
-  <StickerWidget />
+  <StickerWidget
+    v-if="images.length"
+    :rail-images="images"
+    :panel-images="images"
+    title="Консультация<br>эксперта"
+    cta-label="Получить консультацию"
+    @cta="console.log('CTA clicked')"
+  />
 </template>
 
 <style lang="scss" scoped>
@@ -22,6 +42,11 @@
   max-width: 1280px;
   margin: 0 auto;
 }
-.title { text-align: center; margin: 0 0 16px; }
-.section { margin: 32px 0; }
+.title { 
+  text-align: center; 
+  margin: 0 0 16px;
+}
+.section { 
+  margin: 32px 0; 
+}
 </style>
