@@ -6,6 +6,7 @@ const props = withDefaults(defineProps<{
   panelImages?: string[]    
   title?: string
   ctaLabel?: string
+  loading?: boolean
 }>(), {
   railImages: () => [
     'https://i.pravatar.cc/128?img=5',
@@ -19,6 +20,7 @@ const props = withDefaults(defineProps<{
   ],
   title: 'Консультация<br>эксперта',
   ctaLabel: 'Получить консультацию',
+  loading: false,
 })
 
 const expanded = ref(false)  
@@ -44,38 +46,48 @@ const emit = defineEmits<{ (e: 'cta'): void }>()
   >
     <div class="bubble">
       <div class="railContent" :aria-hidden="expanded">
-        <img
-          v-for="(src, i) in props.railImages.slice(0,3)"
-          :key="'rail-'+i"
-          class="avatar"
-          :src="src"
-          :alt="`эксперт ${i+1}`"
-          width="64"
-          height="64"
-          loading="lazy"
-          decoding="async"
-        />
+        <template v-if="props.loading">
+            <div class="avatar skeleton" v-for="n in 3" :key="'rail-skel-'+n" />
+        </template>
+        <template v-else>
+          <img 
+            v-for="(src,i) in props.railImages.slice(0,3)" 
+            :key="'rail-'+i" 
+            class="avatar" 
+            :src="src" 
+            :alt="`эксперт ${i+1}`" 
+            width="64" 
+            height="64" 
+            loading="lazy" 
+            decoding="async" 
+          />
+        </template>
         <button class="arrow" type="button" aria-hidden="true" tabindex="-1">
-        <svg viewBox="0 0 24 24" aria-hidden="true" class="chevron" width="16" height="16">
-          <path d="M15 6L9 12l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="chevron" width="16" height="16">
+            <path d="M15 6L9 12l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
       </div>
 
       <div class="panelContent" :aria-hidden="!expanded">
         <h3 class="title" v-html="props.title" />
         <div class="faces">
-          <img
-            v-for="(src, i) in props.panelImages.slice(0,3)"
-            :key="'face-'+i"
-            class="face"
-            :src="src"
-            :alt="`эксперт ${i+1}`"
-            width="64"
-            height="64"
-            loading="lazy"
-            decoding="async"
-          />
+            <template v-if="props.loading">
+                <div class="face skeleton" v-for="n in 3" :key="'face-skel-'+n" />
+            </template>
+            <template v-else>
+                <img
+                    v-for="(src,i) in props.panelImages.slice(0,3)"
+                    :key="'face-'+i"
+                    class="face"
+                    :src="src"
+                    :alt="`эксперт ${i+1}`"
+                    width="64"
+                    height="64"
+                    loading="lazy"
+                    decoding="async"
+                />
+            </template>
         </div>
         <button class="cta" type="button" @click="emit('cta')">
             {{ props.ctaLabel }}
@@ -283,4 +295,22 @@ const emit = defineEmits<{ (e: 'cta'): void }>()
   .sticker:hover .railContent { opacity: 0; pointer-events: none; }
   .sticker:hover .panelContent { opacity: 1; pointer-events: auto; }
 }
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #e9edf3;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+  animation: shimmer 1.2s infinite;
+}
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
 </style>

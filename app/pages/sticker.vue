@@ -27,9 +27,10 @@ const onCta = () => {
     </section>
   </main>
   <StickerWidget
-    v-if="images.length"
+    v-if="images.length || loading"
     :rail-images="images"
     :panel-images="images"
+    :loading="loading"
     :title="STICKER_TITLE"
     :cta-label="CTA_LABEL"
     @cta="onCta" 
