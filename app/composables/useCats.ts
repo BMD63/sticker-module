@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { CAT_API_URL } from '~/constants/api'
 
 export function useCats() {
   const images = ref<string[]>([])
@@ -12,7 +13,7 @@ export function useCats() {
 
     try {
       const reqs = Array.from({ length: count }, (_, i) =>
-        fetch(`https://cataas.com/cat?${Date.now()}-${i}`) 
+        fetch(`${CAT_API_URL}?${Date.now()}-${i}`) 
           .then(r => {
             if (!r.ok) throw new Error(`HTTP ${r.status}`)
             return r.blob()
