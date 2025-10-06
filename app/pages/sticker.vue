@@ -1,7 +1,7 @@
 <template>
   <main class="sticker-page">
     <h1 class="title">Демонстрация стикера</h1>
-    <section v-for="i in 7" :key="i" class="section">
+    <section v-for="i in 12" :key="i" class="section">
       <h2>Раздел {{ i }}</h2>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum quis
@@ -12,6 +12,7 @@
       </p>
     </section>
   </main>
+  <StickerWidget />
 </template>
 
 <style lang="scss" scoped>
