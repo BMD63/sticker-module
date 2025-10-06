@@ -4,6 +4,8 @@ import { ref } from 'vue'
 const props = withDefaults(defineProps<{
   railImages?: string[]     
   panelImages?: string[]    
+  title?: string
+  ctaLabel?: string
 }>(), {
   railImages: () => [
     'https://i.pravatar.cc/128?img=5',
@@ -15,18 +17,21 @@ const props = withDefaults(defineProps<{
     'https://i.pravatar.cc/128?img=12',
     'https://i.pravatar.cc/128?img=32',
   ],
+  title: 'Консультация<br>эксперта',
+  ctaLabel: 'Получить консультацию',
 })
 
 const expanded = ref(false)  
-const isTouch  = ref(false)
+const canHover = ref(true)
 
 if (typeof window !== 'undefined') {
-  isTouch.value = matchMedia('(hover: none)').matches
+  canHover.value = matchMedia('(any-hover: hover)').matches
 }
 
-function onEnter() { if (!isTouch.value) expanded.value = true }
-function onLeave() { if (!isTouch.value) expanded.value = false }
+function onEnter() { if (canHover.value) expanded.value = true }
+function onLeave() { if (canHover.value) expanded.value = false }
 
+const emit = defineEmits<{ (e: 'cta'): void }>()
 </script>
 
 <template>
@@ -58,7 +63,7 @@ function onLeave() { if (!isTouch.value) expanded.value = false }
       </div>
 
       <div class="panelContent" :aria-hidden="!expanded">
-        <h3 class="title">Консультация<br>эксперта</h3>
+        <h3 class="title" v-html="props.title" />
         <div class="faces">
           <img
             v-for="(src, i) in props.panelImages.slice(0,3)"
@@ -72,7 +77,9 @@ function onLeave() { if (!isTouch.value) expanded.value = false }
             decoding="async"
           />
         </div>
-        <button class="cta" type="button">Получить консультацию</button>
+        <button class="cta" type="button" @click="emit('cta')">
+            {{ props.ctaLabel }}
+        </button>
       </div>
     </div>
   </aside>
@@ -99,10 +106,15 @@ function onLeave() { if (!isTouch.value) expanded.value = false }
 
   --btn-bg: #fff;
 
+  --t-expand: 180ms;                    
+  --t-pop: 280ms;                      
+  --ease-pop: cubic-bezier(.2,.8,.2,1);
+
   position: fixed;
   right: 24px;
   top: 50%;
   z-index: 50;
+  transform: translateY(-50%);
 }
 
 :root { 
@@ -111,7 +123,7 @@ function onLeave() { if (!isTouch.value) expanded.value = false }
 
 .bubble {
   position: relative;
-  transform: translateY(-50%);
+  transform-origin: right center;
   width: var(--rail-w);
   height: var(--box-h);
   padding: var(--pad-collapsed);
@@ -120,10 +132,10 @@ function onLeave() { if (!isTouch.value) expanded.value = false }
   box-shadow: var(--elev);
   overflow: hidden;
   transition:
-    width 150ms ease-out,
-    padding 150ms ease-out,
-    background 150ms ease-out,
-    border-radius 150ms ease-out;
+    width var(--t-expand) ease-out,
+    padding var(--t-expand) ease-out,
+    background var(--t-expand) ease-out,
+    border-radius var(--t-expand) ease-out;
 }
 .sticker.expanded .bubble {
   width: var(--panel-w);
@@ -242,11 +254,13 @@ function onLeave() { if (!isTouch.value) expanded.value = false }
 }
 
 @keyframes bubble-pop {
-  0%   { transform: translateY(-50%) scale(0.965); box-shadow: 0 8px 24px rgba(16,24,40,.10); }
-  60%  { transform: translateY(-50%) scale(1.035); box-shadow: 0 20px 48px rgba(16,24,40,.18); }
-  100% { transform: translateY(-50%) scale(1.000); box-shadow: var(--elev); }
+    0%   { transform: scale(0.965); box-shadow: 0 8px 24px rgba(16,24,40,.10); }
+    60%  { transform: scale(1.04);  box-shadow: 0 20px 48px rgba(16,24,40,.18); }
+    100% { transform: scale(1.00);  box-shadow: var(--elev); }
 }
-.sticker.expanded .bubble { animation: bubble-pop 240ms cubic-bezier(.2,.8,.2,1) both; }
+.sticker.expanded .bubble { 
+    animation: bubble-pop 2240ms cubic-bezier(.2,.8,.2,1) both; 
+}
 
 .panelContent > * {
   transform: translateY(8px);
@@ -258,4 +272,15 @@ function onLeave() { if (!isTouch.value) expanded.value = false }
 .panelContent .faces { transition-delay: 90ms; }
 .panelContent .cta   { transition-delay: 140ms; }
 
+@media (hover: hover) {
+  .sticker:hover .bubble {
+    width: var(--panel-w);
+    padding: var(--pad-expanded);
+    border-radius: var(--radius-expanded);
+    background: #F7F9FC;
+    animation: bubble-pop var(--t-pop) var(--ease-pop) both;
+  }
+  .sticker:hover .railContent { opacity: 0; pointer-events: none; }
+  .sticker:hover .panelContent { opacity: 1; pointer-events: auto; }
+}
 </style>
