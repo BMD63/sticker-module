@@ -1,7 +1,7 @@
 export const STICKER_TITLE = 'Консультация<br>эксперта'
 export const CTA_LABEL = 'Получить консультацию'
 
-export const SECTIONS_COUNT = 7
+export const SECTIONS_COUNT = 10
 
 export const TEXT_PARAGRAPH = `
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum quis

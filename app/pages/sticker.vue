@@ -43,15 +43,42 @@ const onCta = () => {
 <style lang="scss" scoped>
 .sticker-page {
   padding: 24px;
-  padding-right: 140px;
-  max-width: 1280px;
+  padding-right: 110px;
+  max-width: 1440px;
   margin: 0 auto;
+  overflow-wrap: anywhere;  
+  word-break: normal;       
+  hyphens: auto;           
 }
 .title { 
   text-align: center; 
   margin: 0 0 16px;
 }
 .section { 
-  margin: 32px 0; 
+  margin: 24px 0;
+  padding: 16px 20px;
+  background: var(--color-bg-panel);         
+  border: 1px solid rgba(16,24,40,.06);      
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(16,24,40,.08); 
+}
+
+.section h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.section p {
+  margin: 0;
+  color: var(--color-text);
+  opacity: .9;                               
+  hyphens: auto;
+}
+
+h2 {
+  justify-self: center;
 }
 </style>

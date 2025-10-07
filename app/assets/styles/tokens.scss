@@ -1,0 +1,15 @@
+:root {
+  /* Цвета */
+  --color-bg-rail: #F4F6F9;
+  --color-bg-panel: #F7F9FC;
+  --color-btn: #FFFFFF;
+  --color-text: #333333;
+
+  /* Тени */
+  --elev: 0 14px 40px rgba(16, 24, 40, 0.14);
+
+  /* Тайминги/кривые */
+  --t-expand: 180ms;
+  --t-pop: 280ms;
+  --ease-pop: cubic-bezier(.2,.8,.2,1);
+}

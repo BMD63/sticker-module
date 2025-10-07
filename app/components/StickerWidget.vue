@@ -128,12 +128,6 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
   --face-radius: 16px;
   --overlap-h: -12px;
 
-  --btn-bg: #fff;
-
-  --t-expand: 180ms;                    
-  --t-pop: 280ms;                      
-  --ease-pop: cubic-bezier(.2,.8,.2,1);
-
   position: fixed;
   right: 24px;
   top: 50%;
@@ -152,7 +146,7 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
   height: var(--box-h);
   padding: var(--pad-collapsed);
   border-radius: var(--radius-collapsed) 0 0 var(--radius-collapsed);
-  background: #F4F6F9;
+  background: var(--color-bg-rail);  
   box-shadow: var(--elev);
   overflow: hidden;
   transition:
@@ -165,7 +159,7 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
   width: var(--panel-w);
   padding: var(--pad-expanded);
   border-radius: var(--radius-expanded);
-  background: #F7F9FC;
+  background: var(--color-bg-panel); 
 }
 
 .railContent {
@@ -187,7 +181,7 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
   border-radius: var(--avatar-radius);
   background: #d9d9d9;
   box-sizing: border-box;
-  border: 3px solid #F4F6F9    ;
+  border: 3px solid var(--color-bg-rail);
 }
 .avatar + .avatar { 
     margin-top: var(--overlap-v); 
@@ -207,7 +201,7 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
 .chevron { 
     width: 16px; 
     height: 16px; 
-    color: #333; 
+    color: var(--color-text);
     opacity: .4; 
     transition: opacity .15s, 
     transform .18s; 
@@ -241,7 +235,7 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
   font-weight: 600; 
   font-size: 23px; 
   line-height: 1; 
-  color: #333;
+  color: var(--color-text);
 }
 .faces { 
     display: flex; 
@@ -255,7 +249,7 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
     border-radius: var(--face-radius); 
     background: #d9d9d9; 
     box-sizing: border-box;
-    border: 3px solid #F4F6F9;
+    border: 3px solid var(--color-bg-rail); 
 }
 .face + .face { 
     margin-left: var(--overlap-h); 
@@ -269,14 +263,14 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
   text-align: center;
   font-weight: 500; 
   font-size: 16px; 
-  color: #333;
+  color: var(--color-text); 
   border: 0; 
   -webkit-appearance: none;
   appearance: none;
   outline: none;
   background-clip: padding-box;
   border-radius: 16px; 
-  background: var(--btn-bg);
+  background: var(--color-btn); 
   box-shadow: 0 6px 24px rgba(16,24,40,.08); 
   cursor: pointer;
 }
