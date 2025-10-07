@@ -7,6 +7,7 @@ const props = withDefaults(defineProps<{
   title?: string
   ctaLabel?: string
   loading?: boolean
+  error?: string | null
 }>(), {
   railImages: () => [
     'https://i.pravatar.cc/128?img=5',
@@ -21,6 +22,7 @@ const props = withDefaults(defineProps<{
   title: 'Консультация<br>эксперта',
   ctaLabel: 'Получить консультацию',
   loading: false,
+  error: null,
 })
 
 const expanded = ref(false)  
@@ -33,7 +35,7 @@ if (typeof window !== 'undefined') {
 function onEnter() { if (canHover.value) expanded.value = true }
 function onLeave() { if (canHover.value) expanded.value = false }
 
-const emit = defineEmits<{ (e: 'cta'): void }>()
+const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
 </script>
 
 <template>
@@ -49,7 +51,7 @@ const emit = defineEmits<{ (e: 'cta'): void }>()
         <template v-if="props.loading">
             <div class="avatar skeleton" v-for="n in 3" :key="'rail-skel-'+n" />
         </template>
-        <template v-else>
+        <template v-else-if="!props.error">
           <img 
             v-for="(src,i) in props.railImages.slice(0,3)" 
             :key="'rail-'+i" 
@@ -61,6 +63,9 @@ const emit = defineEmits<{ (e: 'cta'): void }>()
             loading="lazy" 
             decoding="async" 
           />
+        </template>
+        <template v-else>
+            <div class="error-badge" title="Не удалось загрузить">!</div>
         </template>
         <button class="arrow" type="button" aria-hidden="true" tabindex="-1">
             <svg viewBox="0 0 24 24" aria-hidden="true" class="chevron" width="16" height="16">
@@ -75,7 +80,7 @@ const emit = defineEmits<{ (e: 'cta'): void }>()
             <template v-if="props.loading">
                 <div class="face skeleton" v-for="n in 3" :key="'face-skel-'+n" />
             </template>
-            <template v-else>
+            <template v-else-if="!props.error">
                 <img
                     v-for="(src,i) in props.panelImages.slice(0,3)"
                     :key="'face-'+i"
@@ -87,11 +92,18 @@ const emit = defineEmits<{ (e: 'cta'): void }>()
                     loading="lazy"
                     decoding="async"
                 />
-            </template>
-        </div>
-        <button class="cta" type="button" @click="emit('cta')">
-            {{ props.ctaLabel }}
-        </button>
+            </template>    
+            <template v-else>
+                 <p class="error-text">Не удалось загрузить изображения.</p>
+           </template>
+        </div>   
+            <button
+                class="cta"
+                type="button"
+                @click="props.error ? emit('retry') : emit('cta')"
+                >
+                {{ props.error ? 'Повторить' : props.ctaLabel }}
+            </button>
       </div>
     </div>
   </aside>
@@ -259,6 +271,10 @@ const emit = defineEmits<{ (e: 'cta'): void }>()
   font-size: 16px; 
   color: #333;
   border: 0; 
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  background-clip: padding-box;
   border-radius: 16px; 
   background: var(--btn-bg);
   box-shadow: 0 6px 24px rgba(16,24,40,.08); 
@@ -311,6 +327,24 @@ const emit = defineEmits<{ (e: 'cta'): void }>()
 }
 @keyframes shimmer {
   100% { transform: translateX(100%); }
+}
+.error-badge {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  font-weight: 700;
+  color: #b42318;          
+  background: #fee4e2;     
+  border: 2px solid #fda29b;
+  box-sizing: border-box;
+  margin-top: 8px;
+}
+
+.error-text {
+  margin: 8px 0 16px;
+  font-size: 14px;
+  color: #b42318;
+  text-align: center;
 }
 
 </style>

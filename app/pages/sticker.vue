@@ -9,6 +9,10 @@ onMounted(() => {
   loadCats(3) 
 })
 
+function onRetry() {
+  loadCats(3)          // повторная загрузка
+}
+
 const onCta = () => {
   console.log('CTA clicked') // имитация вызова обработчика
 }
@@ -17,8 +21,6 @@ const onCta = () => {
 <template>
   <main class="sticker-page">
     <h1 class="title">Демонстрация стикера</h1>
-    <p v-if="loading">Загружаем изображения…</p>
-    <p v-else-if="error">Ошибка: {{ error }}</p>
     <section v-for="i in SECTIONS_COUNT" :key="i" class="section">
       <h2>Раздел {{ i }}</h2>
       <p>
@@ -27,13 +29,14 @@ const onCta = () => {
     </section>
   </main>
   <StickerWidget
-    v-if="images.length || loading"
     :rail-images="images"
     :panel-images="images"
     :loading="loading"
+    :error="error"
     :title="STICKER_TITLE"
     :cta-label="CTA_LABEL"
-    @cta="onCta" 
+    @cta="onCta"
+    @retry="onRetry"
   />
 </template>
 
