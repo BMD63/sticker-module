@@ -1,75 +1,25 @@
-# Nuxt Minimal Starter
+# sticker-module
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Анимированный **стикер** для Nuxt 4.  
+По ховеру свернутый «рейл» с аватарками трансформируется в карточку с заголовком и кнопкой.  
+Строго соответствует макету (размеры, радиусы, тени, отступы).
 
-## Setup
+## Демо
 
-Make sure to install dependencies:
+- Production: _добавьте ссылку после деплоя (Vercel/Netlify)_
+- Страница со стикером: `/sticker`
 
-```bash
-# npm
-npm install
+## Стек
 
-# pnpm
-pnpm install
+- **Nuxt 4** (Vue 3 + Vite + Nitro)
+- **TypeScript**
+- **SCSS** (глобальные токены и стили)
+- **Vitest** (unit-тесты), **@vue/test-utils**
+- **ESLint 9** (новая flat-конфигурация)
 
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+## Быстрый старт
 
 ```bash
-# npm
+
+npm i
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
