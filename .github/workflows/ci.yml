@@ -2,8 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
+    branches: [main]
 
 jobs:
   build-test:
@@ -16,29 +17,24 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'        
           cache: 'npm'
 
-      - name: Install deps (ci)
+      - name: Install
         run: npm ci
-        env:
-          NPM_CONFIG_FUND: false
-          NPM_CONFIG_AUDIT: false
 
       - name: Lint
         run: npm run lint
 
       - name: Test
-        run: npm test
+        run: npm test -- --run
 
-      - name: Build Nuxt
-        env:
-          NUXT_TELEMETRY_DISABLED: 1
-        run: npm run build
-        
-      - name: Upload .output
-        if: ${{ always() && hashFiles('.output/**') != '' }}
+      - name: Build
+        run: NITRO_PRESET=github-pages npm run build
+
+      - name: Upload static (optional)
+        if: success() && hashFiles('.output/public/**') != ''
         uses: actions/upload-artifact@v4
         with:
-          name: nuxt-output
-          path: .output
+          name: site
+          path: .output/public
