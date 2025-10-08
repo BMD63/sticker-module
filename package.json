@@ -10,7 +10,7 @@
 
     "lint": "eslint app tests --ext .ts,.js,.vue --max-warnings=0",
     "lint:fix": "eslint app tests --ext .ts,.js,.vue --fix",
-
+    "pretest": "nuxt prepare",
     "test": "vitest run",
     "test:ui": "vitest",
     "test:cov": "vitest run --coverage"
