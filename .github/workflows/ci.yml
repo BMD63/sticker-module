@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
   build-test:
@@ -17,23 +16,28 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'    
-          cache: 'npm'           
+          node-version: '18'
+          cache: 'npm'
 
-      - name: Install deps (clean)
+      - name: Install deps (ci)
         run: npm ci
+        env:
+          NPM_CONFIG_FUND: false
+          NPM_CONFIG_AUDIT: false
 
       - name: Lint
         run: npm run lint
 
       - name: Test
-        run: npm test -- --run
+        run: npm test
 
-      - name: Build
+      - name: Build Nuxt
+        env:
+          NUXT_TELEMETRY_DISABLED: 1
         run: npm run build
-
-      - name: Upload .output (Nuxt)
-        if: always()
+        
+      - name: Upload .output
+        if: ${{ always() && hashFiles('.output/**') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: nuxt-output
