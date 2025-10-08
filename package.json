@@ -8,8 +8,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "eslint . --ext .ts,.js,.vue --max-warnings=0",
-    "lint:fix": "eslint . --ext .ts,.js,.vue --fix"
+    "lint": "eslint app tests --ext .ts,.js,.vue --max-warnings=0",
+    "lint:fix": "eslint app tests --ext .ts,.js,.vue --fix"
   },
   "dependencies": {
     "nuxt": "^4.1.2",

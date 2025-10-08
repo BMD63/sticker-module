@@ -3,17 +3,17 @@ const vueParser = require('vue-eslint-parser')
 const ts = require('@typescript-eslint/eslint-plugin')
 const tsParser = require('@typescript-eslint/parser')
 
-
 const vueFlatPreset = vue.configs['flat/recommended'] ?? []
 
 module.exports = [
   {
     ignores: [
       'node_modules/**',
-      'dist/**',
-      'coverage/**',
       '.nuxt/**',
       '.nitro/**',
+      '.output/**',
+      'dist/**',
+      'coverage/**',
       '.vite/**',
       '.cache/**',
       '*.log',
@@ -33,7 +33,6 @@ module.exports = [
         ecmaVersion: 'latest',
         sourceType: 'module',
         extraFileExtensions: ['.vue'],
-
       },
     },
     plugins: {
@@ -42,11 +41,34 @@ module.exports = [
     },
     rules: {
       'vue/multi-word-component-names': 'off',
+      'vue/no-v-html': 'off',
+
       '@typescript-eslint/no-unused-vars': [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-      'no-console': 'warn',
+
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+    },
+  },
+
+  {
+    files: ['tests/**/*.{js,ts}'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeAll: 'readonly',
+        beforeEach: 'readonly',
+        afterAll: 'readonly',
+        afterEach: 'readonly',
+        vi: 'readonly',
+      },
+    },
+    rules: {
+      'no-console': 'off',
     },
   },
 ]

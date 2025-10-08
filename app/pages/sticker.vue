@@ -14,6 +14,7 @@ function onRetry() {
 }
 
 const onCta = () => {
+  /* eslint-disable-next-line no-console */
   console.log('CTA clicked') // имитация вызова обработчика
 }
 </script>

@@ -113,11 +113,14 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
         class="panelContent"
         :aria-hidden="!expanded"
       >
-      <h3 class="title">
-        <template v-for="(line, i) in titleLines" :key="i">
-          <span>{{ line }}</span><br v-if="i < titleLines.length - 1" />
-        </template>
-      </h3>
+        <h3 class="title">
+          <template
+            v-for="(line, i) in titleLines"
+            :key="i"
+          >
+            <span>{{ line }}</span><br v-if="i < titleLines.length - 1">
+          </template>
+        </h3>
         <div class="faces">
           <template v-if="props.loading">
             <div
