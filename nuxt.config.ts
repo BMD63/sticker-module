@@ -3,4 +3,5 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   nitro: { preset: 'github_pages' },
   css: ['~/assets/styles/main.scss'],
+  app: { baseURL: '/sticker-module/' }
 })
