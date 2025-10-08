@@ -20,8 +20,14 @@ const onCta = () => {
 
 <template>
   <main class="sticker-page">
-    <h1 class="title">Демонстрация стикера</h1>
-    <section v-for="i in SECTIONS_COUNT" :key="i" class="section">
+    <h1 class="title">
+      Демонстрация стикера
+    </h1>
+    <section
+      v-for="i in SECTIONS_COUNT"
+      :key="i"
+      class="section"
+    >
       <h2>Раздел {{ i }}</h2>
       <p>
         {{ TEXT_PARAGRAPH }}

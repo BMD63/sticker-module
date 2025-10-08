@@ -1,7 +1,5 @@
 <template>
-  <main style="padding: 32px">
-    <h1>Sticker App</h1>
-    <p>Страница демонстрации стикера:</p>
+  <main style="min-height:100vh;display:grid;place-items:center">
     <NuxtLink to="/sticker">Открыть стикер</NuxtLink>
   </main>
 </template>

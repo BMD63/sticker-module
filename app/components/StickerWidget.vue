@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = withDefaults(defineProps<{
   railImages?: string[]     
@@ -28,6 +28,11 @@ const props = withDefaults(defineProps<{
 const expanded = ref(false)  
 const canHover = ref(true)
 
+const titleLines = computed(() => {
+  const raw = String(props.title ?? '')
+  return raw.split(/<br\s*\/?>/i)
+})
+
 if (typeof window !== 'undefined') {
   canHover.value = matchMedia('(any-hover: hover)').matches
 }
@@ -47,9 +52,16 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
     @mouseleave="onLeave"
   >
     <div class="bubble">
-      <div class="railContent" :aria-hidden="expanded">
+      <div
+        class="railContent"
+        :aria-hidden="expanded"
+      >
         <template v-if="props.loading">
-            <div class="avatar skeleton" v-for="n in 3" :key="'rail-skel-'+n" />
+          <div
+            v-for="n in 3"
+            :key="'rail-skel-'+n"
+            class="avatar skeleton"
+          />
         </template>
         <template v-else-if="!props.error">
           <img 
@@ -62,48 +74,84 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
             height="64" 
             loading="lazy" 
             decoding="async" 
-          />
+          >
         </template>
         <template v-else>
-            <div class="error-badge" title="Не удалось загрузить">!</div>
+          <div
+            class="error-badge"
+            title="Не удалось загрузить"
+          >
+            !
+          </div>
         </template>
-        <button class="arrow" type="button" aria-hidden="true" tabindex="-1">
-            <svg viewBox="0 0 24 24" aria-hidden="true" class="chevron" width="16" height="16">
-            <path d="M15 6L9 12l6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+        <button
+          class="arrow"
+          type="button"
+          aria-hidden="true"
+          tabindex="-1"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            class="chevron"
+            width="16"
+            height="16"
+          >
+            <path
+              d="M15 6L9 12l6 6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
         </button>
       </div>
 
-      <div class="panelContent" :aria-hidden="!expanded">
-        <h3 class="title" v-html="props.title" />
+      <div
+        class="panelContent"
+        :aria-hidden="!expanded"
+      >
+      <h3 class="title">
+        <template v-for="(line, i) in titleLines" :key="i">
+          <span>{{ line }}</span><br v-if="i < titleLines.length - 1" />
+        </template>
+      </h3>
         <div class="faces">
-            <template v-if="props.loading">
-                <div class="face skeleton" v-for="n in 3" :key="'face-skel-'+n" />
-            </template>
-            <template v-else-if="!props.error">
-                <img
-                    v-for="(src,i) in props.panelImages.slice(0,3)"
-                    :key="'face-'+i"
-                    class="face"
-                    :src="src"
-                    :alt="`эксперт ${i+1}`"
-                    width="64"
-                    height="64"
-                    loading="lazy"
-                    decoding="async"
-                />
-            </template>    
-            <template v-else>
-                 <p class="error-text">Не удалось загрузить изображения.</p>
-           </template>
+          <template v-if="props.loading">
+            <div
+              v-for="n in 3"
+              :key="'face-skel-'+n"
+              class="face skeleton"
+            />
+          </template>
+          <template v-else-if="!props.error">
+            <img
+              v-for="(src,i) in props.panelImages.slice(0,3)"
+              :key="'face-'+i"
+              class="face"
+              :src="src"
+              :alt="`эксперт ${i+1}`"
+              width="64"
+              height="64"
+              loading="lazy"
+              decoding="async"
+            >
+          </template>    
+          <template v-else>
+            <p class="error-text">
+              Не удалось загрузить изображения.
+            </p>
+          </template>
         </div>   
-            <button
-                class="cta"
-                type="button"
-                @click="props.error ? emit('retry') : emit('cta')"
-                >
-                {{ props.error ? 'Повторить' : props.ctaLabel }}
-            </button>
+        <button
+          class="cta"
+          type="button"
+          @click="props.error ? emit('retry') : emit('cta')"
+        >
+          {{ props.error ? 'Повторить' : props.ctaLabel }}
+        </button>
       </div>
     </div>
   </aside>
@@ -237,6 +285,7 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
   line-height: 1; 
   color: var(--color-text);
 }
+
 .faces { 
     display: flex; 
     justify-content: center; 
