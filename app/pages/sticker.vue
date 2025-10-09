@@ -1,24 +1,32 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { useCats } from '~/composables/useCats'
+import { onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
+import { useRoute } from '#imports'
+import { usePictures } from '~/composables/usePictures'
+import type { PictureSource } from '~/constants/api'
+
 import { STICKER_TITLE, CTA_LABEL, SECTIONS_COUNT, TEXT_PARAGRAPH } from '~/constants/content'
 import { AVOID_PADDING_DIVISOR } from '~/constants/ui'
 
-const { images, loading, error, loadCats } = useCats()
-
-onMounted(() => {
-  loadCats(3)
+function pickSrc(q: unknown): PictureSource {
+  const v = Array.isArray(q) ? q[0] : q
+  const s = String(v ?? '').toLowerCase()
+  return (s === 'dogs' ? 'dogs' : 'cats')
+}
+const route = useRoute()
+const src = ref<PictureSource>(pickSrc(route.query.src))
+const { source, images, loading, error, load, setSource } = usePictures(src.value, 3)
+onMounted(() => { load() })
+watch(() => route.query.src, (q) => {
+  const next = pickSrc(q)
+  if (next !== src.value) {
+    src.value = next
+    setSource(next)
+    load()
+    schedule(updateAvoid)
+  }
 })
 
-function onRetry() {
-  loadCats(3) // повторная загрузка
-}
-
-const onCta = () => {
-  /* eslint-disable-next-line no-console */
-  console.log('CTA clicked') // имитируем действие по клику
-}
-
+// ————— вспомогательные утилиты —————
 function cssPx(varName: string, fallback: number): number {
   const v = getComputedStyle(document.documentElement).getPropertyValue(varName).trim()
   const n = parseFloat(v)
@@ -26,19 +34,18 @@ function cssPx(varName: string, fallback: number): number {
 }
 
 function getStickerBand() {
-  const vh = window.innerHeight
-  const boxH = cssPx('--sticker-box-h', 266)
+  const vh   = window.innerHeight
+  const boxH = cssPx('--sticker-box-h', 266) 
   const top = (vh / 2) - (boxH / 2)
   const bottom = top + boxH
   return { top, bottom }
 }
 
-// отступ параграфа от развернутого стикера
 function getAvoidPaddingPx() {
   const panelW = cssPx('--sticker-panel-w', 280)
   const right  = cssPx('--sticker-right', 24)
   const gap    = cssPx('--sticker-gap', 16)
-  return Math.round((panelW + right + gap) / AVOID_PADDING_DIVISOR) 
+  return Math.round((panelW + right + gap) / AVOID_PADDING_DIVISOR) // отступ от стикера
 }
 
 let rafId: number | null = null
@@ -51,23 +58,18 @@ function updateAvoid() {
   const paras = document.querySelectorAll<HTMLElement>('.content-paragraph')
   const isExpanded = document.body.classList.contains('sticker-expanded')
 
-  if (!isExpanded) {
-    paras.forEach(p => {
-      p.style.removeProperty('--avoid-pr')
-    })
-    return
-  }
+  paras.forEach(p => p.style.removeProperty('padding-right'))
+
+  if (!isExpanded) return
 
   const { top, bottom } = getStickerBand()
-  const avoidPx = getAvoidPaddingPx()
+  const pad = `${getAvoidPaddingPx()}px`
 
   paras.forEach(p => {
     const r = p.getBoundingClientRect()
     const intersects = r.bottom > top && r.top < bottom
     if (intersects) {
-      p.style.setProperty('--avoid-pr', `${avoidPx}px`)
-    } else {
-      p.style.removeProperty('--avoid-pr')
+      p.style.setProperty('padding-right', pad)
     }
   })
 }
@@ -76,9 +78,11 @@ function bindListeners() {
   const handler = () => schedule(updateAvoid)
   window.addEventListener('scroll', handler, { passive: true })
   window.addEventListener('resize', handler)
-  window.addEventListener('sticker-change', handler)
+  window.addEventListener('sticker-change', handler) 
+
   const mo = new MutationObserver(handler)
   mo.observe(document.body, { attributes: true, attributeFilter: ['class'] })
+
   ;(bindListeners as any)._cleanup = () => {
     window.removeEventListener('scroll', handler)
     window.removeEventListener('resize', handler)
@@ -96,24 +100,26 @@ onBeforeUnmount(() => {
   const c = (bindListeners as any)._cleanup
   if (c) c()
 })
+
+// ————— CTA handlers —————
+function onRetry() { load() }
+function onCta() { 
+  /* eslint-disable-next-line no-console */ 
+  console.log('CTA clicked') }
 </script>
 
 <template>
   <main class="sticker-page">
-    <h1 class="title">
-      Демонстрация стикера
-    </h1>
-    <section
-      v-for="i in SECTIONS_COUNT"
-      :key="i"
-      class="section"
-    >
+    <h1 class="title">Демонстрация стикера</h1>
+
+    <section v-for="i in SECTIONS_COUNT" :key="i" class="section">
       <h2>Раздел {{ i }}</h2>
       <p class="content-paragraph">
         {{ TEXT_PARAGRAPH }}
       </p>
     </section>
   </main>
+
   <StickerWidget
     :rail-images="images"
     :panel-images="images"
@@ -127,21 +133,15 @@ onBeforeUnmount(() => {
 </template>
 
 <style lang="scss" scoped>
-/* Глобальные токены */
 :global(:root) {
-  --sticker-right: 24px;
-  --sticker-rail-w: 68px;
+  --sticker-right: 24px;   
+  --sticker-rail-w: 68px;  
   --sticker-panel-w: 280px;
-  --sticker-gap: 16px;
+  --sticker-gap: 16px;    
 }
 
 .content-paragraph {
-  padding-right: var(--avoid-pr, 0);
   transition: padding-right 180ms ease;
-}
-
-:global(body.sticker-expanded) :deep(.content-paragraph.avoid-sticker) {
-  padding-right: var(--avoid-pad, 0px);
 }
 
 .sticker-page {
@@ -153,12 +153,10 @@ onBeforeUnmount(() => {
   word-break: normal;
   hyphens: auto;
 }
-
 .title {
   text-align: center;
   margin: 0 0 16px;
 }
-
 .section {
   margin: 24px 0;
   padding: 16px 20px;
@@ -167,7 +165,6 @@ onBeforeUnmount(() => {
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(16, 24, 40, .08);
 }
-
 .section h2 {
   margin: 0 0 10px;
   font-size: 20px;
@@ -176,7 +173,6 @@ onBeforeUnmount(() => {
   color: var(--color-text);
   justify-self: center;
 }
-
 .section p {
   margin: 0;
   color: var(--color-text);
