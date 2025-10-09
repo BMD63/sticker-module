@@ -2,6 +2,7 @@
 import { onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useCats } from '~/composables/useCats'
 import { STICKER_TITLE, CTA_LABEL, SECTIONS_COUNT, TEXT_PARAGRAPH } from '~/constants/content'
+import { AVOID_PADDING_DIVISOR } from '~/constants/ui'
 
 const { images, loading, error, loadCats } = useCats()
 
@@ -32,11 +33,12 @@ function getStickerBand() {
   return { top, bottom }
 }
 
+// отступ параграфа от развернутого стикера
 function getAvoidPaddingPx() {
   const panelW = cssPx('--sticker-panel-w', 280)
   const right  = cssPx('--sticker-right', 24)
   const gap    = cssPx('--sticker-gap', 16)
-  return Math.round((panelW + right + gap) / 2)
+  return Math.round((panelW + right + gap) / AVOID_PADDING_DIVISOR) 
 }
 
 let rafId: number | null = null
@@ -136,6 +138,10 @@ onBeforeUnmount(() => {
 .content-paragraph {
   padding-right: var(--avoid-pr, 0);
   transition: padding-right 180ms ease;
+}
+
+:global(body.sticker-expanded) :deep(.content-paragraph.avoid-sticker) {
+  padding-right: var(--avoid-pad, 0px);
 }
 
 .sticker-page {
