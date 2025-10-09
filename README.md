@@ -6,7 +6,7 @@
 
 ## Демо
 
-- Production: _добавьте ссылку после деплоя (Vercel/Netlify)_
+- Production: Доступно на GitHub Pages: https://bmd63.github.io/sticker-module/sticker
 - Страница со стикером: `/sticker`
 
 ## Стек

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onBeforeUnmount } from 'vue'
 
 const props = withDefaults(defineProps<{
   railImages?: string[]     
@@ -37,9 +37,43 @@ if (typeof window !== 'undefined') {
   canHover.value = matchMedia('(any-hover: hover)').matches
 }
 
-function onEnter() { if (canHover.value) expanded.value = true }
-function onLeave() { if (canHover.value) expanded.value = false }
+function notifyStickerChange() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('sticker-change'))
+  }
+}
 
+function onEnter() {
+  if (canHover.value) {
+    expanded.value = true
+    if (typeof document !== 'undefined') {
+      document.body.classList.add('sticker-expanded')
+    }
+    notifyStickerChange()
+  }
+}
+function onLeave() {
+  if (canHover.value) {
+    expanded.value = false
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('sticker-expanded')
+    }
+    notifyStickerChange()
+  }
+}
+
+watch(expanded, (val) => {
+  if (typeof document !== 'undefined') {
+    document.body.classList.toggle('sticker-expanded', val)
+  }
+  notifyStickerChange()
+})
+
+onBeforeUnmount(() => {
+  if (typeof document !== 'undefined') {
+    document.body.classList.remove('sticker-expanded')
+  }
+})
 const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
 </script>
 
@@ -165,7 +199,8 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
 .sticker {
   --rail-w: 68px;           
   --panel-w: 280px;         
-  --box-h: 266px;           
+  --box-h: 266px;      
+  --sticker-box-h: var(--box-h);     
   --pad-collapsed: 2px 2px 16px 2px;
   --pad-expanded: 16px;
   --radius-collapsed: 14px;  
