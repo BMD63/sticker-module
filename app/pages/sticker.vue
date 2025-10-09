@@ -14,7 +14,7 @@ function pickSrc(q: unknown): PictureSource {
 }
 const route = useRoute()
 const src = ref<PictureSource>(pickSrc(route.query.src))
-const { source, images, loading, error, load, setSource } = usePictures(src.value, 3)
+const { images, loading, error, load, setSource } = usePictures(src.value, 3)
 onMounted(() => { load() })
 watch(() => route.query.src, (q) => {
   const next = pickSrc(q)
@@ -110,9 +110,15 @@ function onCta() {
 
 <template>
   <main class="sticker-page">
-    <h1 class="title">Демонстрация стикера</h1>
+    <h1 class="title">
+      Демонстрация стикера
+    </h1>
 
-    <section v-for="i in SECTIONS_COUNT" :key="i" class="section">
+    <section
+      v-for="i in SECTIONS_COUNT"
+      :key="i"
+      class="section"
+    >
       <h2>Раздел {{ i }}</h2>
       <p class="content-paragraph">
         {{ TEXT_PARAGRAPH }}

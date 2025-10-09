@@ -51,5 +51,5 @@ export function usePictures(initialSource: PictureSource, defaultCount = 3) {
     error.value = null
   }
 
-  return { source, images, loading, error, load, setSource }
+  return { images, loading, error, load, setSource }
 }
