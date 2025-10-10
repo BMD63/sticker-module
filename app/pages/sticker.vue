@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+  import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
   import { useRoute, useRouter } from '#imports'
   import { usePictures } from '~/composables/usePictures'
   import { type PictureSource } from '~/constants/api'
@@ -90,7 +90,8 @@
     load(3)
   }
   const onCta = () => {
-      console.log('CTA clicked')
+    // eslint-disable-next-line no-console
+    console.log('CTA clicked')
   }
 </script>
 
