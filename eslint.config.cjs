@@ -2,6 +2,7 @@ const vue = require('eslint-plugin-vue')
 const vueParser = require('vue-eslint-parser')
 const ts = require('@typescript-eslint/eslint-plugin')
 const tsParser = require('@typescript-eslint/parser')
+const prettier = require('eslint-config-prettier')
 
 const vueFlatPreset = vue.configs['flat/recommended'] ?? []
 
@@ -71,4 +72,5 @@ module.exports = [
       'no-console': 'off',
     },
   },
+  prettier,
 ]

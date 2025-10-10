@@ -7,13 +7,14 @@
     "build": "nuxt build",
     "preview": "nuxt preview",
     "generate": "nuxt generate",
-
+    "format": "prettier . --write",
     "lint": "eslint app tests --ext .ts,.js,.vue --max-warnings=0",
     "lint:fix": "eslint app tests --ext .ts,.js,.vue --fix",
     "pretest": "nuxt prepare",
     "test": "vitest run",
     "test:ui": "vitest",
-    "test:cov": "vitest run --coverage"
+    "test:cov": "vitest run --coverage",
+    "prepare": "husky"
   },
   "dependencies": {
     "nuxt": "^4.1.2",
@@ -26,10 +27,20 @@
     "@typescript-eslint/parser": "^8.46.0",
     "@vue/test-utils": "^2.4.6",
     "eslint": "^9.37.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^10.5.0",
+    "husky": "^9.1.7",
     "jsdom": "^27.0.0",
+    "lint-staged": "^16.2.3",
+    "prettier": "^3.6.2",
     "sass": "^1.93.2",
     "vitest": "^3.2.4",
     "vue-eslint-parser": "^10.2.0"
+  },
+  "lint-staged": {
+    "*.{js,ts,vue,json,md,scss,css}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   }
 }
