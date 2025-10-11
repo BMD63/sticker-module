@@ -1,30 +1,45 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
-import { useRoute } from '#imports'
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
+import { useRoute, useRouter } from '#imports'
 import { usePictures } from '~/composables/usePictures'
 import type { PictureSource } from '~/constants/api'
-
 import { STICKER_TITLE, CTA_LABEL, SECTIONS_COUNT, TEXT_PARAGRAPH } from '~/constants/content'
 import { AVOID_PADDING_DIVISOR } from '~/constants/ui'
 
 function pickSrc(q: unknown): PictureSource {
   const v = Array.isArray(q) ? q[0] : q
   const s = String(v ?? '').toLowerCase()
-  return (s === 'dogs' ? 'dogs' : 'cats')
+  return s === 'dogs' ? 'dogs' : 'cats'
 }
+
 const route = useRoute()
+const router = useRouter()
+
 const src = ref<PictureSource>(pickSrc(route.query.src))
+const selected = ref<PictureSource>(src.value)
+
 const { images, loading, error, load, setSource } = usePictures(src.value, 3)
 onMounted(() => { load() })
-watch(() => route.query.src, (q) => {
-  const next = pickSrc(q)
-  if (next !== src.value) {
-    src.value = next
-    setSource(next)
-    load()
-    schedule(updateAvoid)
+
+watch(
+  () => route.query.src,
+  (q) => {
+    const next = pickSrc(q)
+    if (next !== src.value) {
+      src.value = next
+      selected.value = next
+      setSource(next)
+      load()
+      schedule(updateAvoid)
+    }
   }
-})
+)
+
+async function onSelect(next: PictureSource) {
+  if (selected.value === next) return
+  selected.value = next
+  await router.replace({ query: { ...route.query, src: next } })
+}
 
 // ————— вспомогательные утилиты —————
 function cssPx(varName: string, fallback: number): number {
@@ -34,38 +49,41 @@ function cssPx(varName: string, fallback: number): number {
 }
 
 function getStickerBand() {
-  const vh   = window.innerHeight
-  const boxH = cssPx('--sticker-box-h', 266) 
-  const top = (vh / 2) - (boxH / 2)
+  const vh = window.innerHeight
+  const boxH = cssPx('--sticker-box-h', 266)
+  const top = vh / 2 - boxH / 2
   const bottom = top + boxH
   return { top, bottom }
 }
 
 function getAvoidPaddingPx() {
   const panelW = cssPx('--sticker-panel-w', 280)
-  const right  = cssPx('--sticker-right', 24)
-  const gap    = cssPx('--sticker-gap', 16)
-  return Math.round((panelW + right + gap) / AVOID_PADDING_DIVISOR) // отступ от стикера
+  const right = cssPx('--sticker-right', 24)
+  const gap = cssPx('--sticker-gap', 16)
+  return Math.round((panelW + right + gap) / AVOID_PADDING_DIVISOR)
 }
 
 let rafId: number | null = null
 function schedule(fn: () => void) {
   if (rafId != null) cancelAnimationFrame(rafId)
-  rafId = requestAnimationFrame(() => { rafId = null; fn() })
+  rafId = requestAnimationFrame(() => {
+    rafId = null
+    fn()
+  })
 }
 
 function updateAvoid() {
   const paras = document.querySelectorAll<HTMLElement>('.content-paragraph')
   const isExpanded = document.body.classList.contains('sticker-expanded')
 
-  paras.forEach(p => p.style.removeProperty('padding-right'))
+  paras.forEach((p) => p.style.removeProperty('padding-right'))
 
   if (!isExpanded) return
 
   const { top, bottom } = getStickerBand()
   const pad = `${getAvoidPaddingPx()}px`
 
-  paras.forEach(p => {
+  paras.forEach((p) => {
     const r = p.getBoundingClientRect()
     const intersects = r.bottom > top && r.top < bottom
     if (intersects) {
@@ -78,7 +96,7 @@ function bindListeners() {
   const handler = () => schedule(updateAvoid)
   window.addEventListener('scroll', handler, { passive: true })
   window.addEventListener('resize', handler)
-  window.addEventListener('sticker-change', handler) 
+  window.addEventListener('sticker-change', handler)
 
   const mo = new MutationObserver(handler)
   mo.observe(document.body, { attributes: true, attributeFilter: ['class'] })
@@ -101,11 +119,12 @@ onBeforeUnmount(() => {
   if (c) c()
 })
 
-// ————— CTA handlers —————
+// имитация хэндлера
 function onRetry() { load() }
-function onCta() { 
-  /* eslint-disable-next-line no-console */ 
-  console.log('CTA clicked') }
+function onCta() {
+  /* eslint-disable-next-line no-console */
+  console.log('CTA clicked')
+}
 </script>
 
 <template>
@@ -113,6 +132,31 @@ function onCta() {
     <h1 class="title">
       Демонстрация стикера
     </h1>
+
+    <div
+      class="source-toggle"
+      role="tablist"
+      aria-label="Источник картинок"
+    >
+      <button
+        role="tab"
+        :aria-selected="selected === 'cats'"
+        class="toggle-btn"
+        :class="{ active: selected === 'cats' }"
+        @click="onSelect('cats')"
+      >
+        Котики
+      </button>
+      <button
+        role="tab"
+        :aria-selected="selected === 'dogs'"
+        class="toggle-btn"
+        :class="{ active: selected === 'dogs' }"
+        @click="onSelect('dogs')"
+      >
+        Пёсики
+      </button>
+    </div>
 
     <section
       v-for="i in SECTIONS_COUNT"
@@ -139,11 +183,34 @@ function onCta() {
 </template>
 
 <style lang="scss" scoped>
+.source-toggle {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 0 0 16px;
+}
+.toggle-btn {
+  border: 0;
+  background: transparent;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--color-text);
+  opacity: .7;
+}
+.toggle-btn.active {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(16,24,40,.08);
+  opacity: 1;
+}
+
+/* Глобальные токены для расчёта отступов */
 :global(:root) {
-  --sticker-right: 24px;   
-  --sticker-rail-w: 68px;  
+  --sticker-right: 24px;
+  --sticker-rail-w: 68px;
   --sticker-panel-w: 280px;
-  --sticker-gap: 16px;    
+  --sticker-gap: 16px;
 }
 
 .content-paragraph {
@@ -167,9 +234,9 @@ function onCta() {
   margin: 24px 0;
   padding: 16px 20px;
   background: var(--color-bg-panel);
-  border: 1px solid rgba(16, 24, 40, .06);
+  border: 1px solid rgba(16,24,40,.06);
   border-radius: 16px;
-  box-shadow: 0 6px 20px rgba(16, 24, 40, .08);
+  box-shadow: 0 6px 20px rgba(16,24,40,.08);
 }
 .section h2 {
   margin: 0 0 10px;
