@@ -119,11 +119,20 @@ onBeforeUnmount(() => {
   if (c) c()
 })
 
+const showModal = ref(false)
 // имитация хэндлера
 function onRetry() { load() }
 function onCta() {
   /* eslint-disable-next-line no-console */
   console.log('CTA clicked')
+  showModal.value = true
+}
+
+function submitDemo(e: Event) {
+  e.preventDefault()
+  // eslint-disable-next-line no-console
+  console.log('submit demo form')
+  showModal.value = false
 }
 </script>
 
@@ -180,6 +189,27 @@ function onCta() {
     @cta="onCta"
     @retry="onRetry"
   />
+  <ModalDialog v-model="showModal" :title="$t ? $t('sticker.title') : 'Консультация<br>эксперта'">
+    <form @submit="submitDemo" class="lead-form">
+      <label>
+        Имя
+        <input type="text" name="name" required />
+      </label>
+      <label>
+        Телефон/Email
+        <input type="text" name="contact" required />
+      </label>
+      <label>
+        Комментарий
+        <textarea name="msg" rows="4" />
+      </label>
+      <div class="lead-actions">
+        <button type="submit" class="btn primary">Отправить</button>
+        <button type="button" class="btn" @click="showModal = false">Отмена</button>
+      </div>
+    </form>
+  </ModalDialog>
+  
 </template>
 
 <style lang="scss" scoped>
@@ -252,4 +282,22 @@ function onCta() {
   opacity: .9;
   hyphens: auto;
 }
+
+.lead-form {
+  display: grid; gap: 12px;
+}
+.lead-form label { display: grid; gap: 6px; font-size: 14px; }
+.lead-form input, .lead-form textarea {
+  border: 1px solid rgba(16,24,40,.16);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+.lead-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+.btn {
+  height: 40px; padding: 0 14px; border-radius: 10px; border: 0; cursor: pointer;
+  background: #f2f4f7;
+}
+.btn.primary { background: #111827; color: #fff; }
+.btn:hover { filter: brightness(0.98); }
 </style>
