@@ -7,7 +7,6 @@
     "build": "nuxt build",
     "preview": "nuxt preview",
     "generate": "nuxt generate",
-
     "lint": "eslint app tests --ext .ts,.js,.vue --max-warnings=0",
     "lint:fix": "eslint app tests --ext .ts,.js,.vue --fix",
     "pretest": "nuxt prepare",
@@ -18,7 +17,8 @@
   "dependencies": {
     "nuxt": "^4.1.2",
     "vue": "^3.5.22",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/node": "^24.7.0",

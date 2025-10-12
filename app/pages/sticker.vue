@@ -189,27 +189,54 @@ function submitDemo(e: Event) {
     @cta="onCta"
     @retry="onRetry"
   />
-  <ModalDialog v-model="showModal" :title="$t ? $t('sticker.title') : 'Консультация<br>эксперта'">
-    <form @submit="submitDemo" class="lead-form">
+  <ModalDialog
+    v-model="showModal"
+    :title="$t ? $t('sticker.title') : 'Консультация<br>эксперта'"
+  >
+    <form
+      class="lead-form"
+      @submit="submitDemo"
+    >
       <label>
         Имя
-        <input type="text" name="name" required />
+        <input
+          type="text"
+          name="name"
+          required
+        >
       </label>
       <label>
         Телефон/Email
-        <input type="text" name="contact" required />
+        <input
+          type="text"
+          name="contact"
+          required
+        >
       </label>
       <label>
         Комментарий
-        <textarea name="msg" rows="4" />
+        <textarea
+          name="msg"
+          rows="4"
+        />
       </label>
       <div class="lead-actions">
-        <button type="submit" class="btn primary">Отправить</button>
-        <button type="button" class="btn" @click="showModal = false">Отмена</button>
+        <button
+          type="submit"
+          class="btn primary"
+        >
+          Отправить
+        </button>
+        <button
+          type="button"
+          class="btn"
+          @click="showModal = false"
+        >
+          Отмена
+        </button>
       </div>
     </form>
   </ModalDialog>
-  
 </template>
 
 <style lang="scss" scoped>

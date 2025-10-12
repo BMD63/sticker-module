@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref, watch, nextTick } from 'vue'
+import { onBeforeUnmount, ref, watch, nextTick } from 'vue'
 
 const props = withDefaults(defineProps<{
   modelValue: boolean
@@ -78,15 +78,25 @@ function onBackdrop(e: MouseEvent) {
       @mousedown="onBackdrop"
     >
       <section
-        class="dialog"
         ref="dialog"
+        class="dialog"
         role="dialog"
         aria-modal="true"
         :aria-label="title"
       >
         <header class="dialog__header">
-          <h3 class="dialog__title" v-html="title" />
-          <button class="dialog__close" type="button" @click="close" aria-label="Закрыть">×</button>
+          <h3
+            class="dialog__title"
+            v-html="title"
+          />
+          <button
+            class="dialog__close"
+            type="button"
+            aria-label="Закрыть"
+            @click="close"
+          >
+            ×
+          </button>
         </header>
 
         <div class="dialog__body">
