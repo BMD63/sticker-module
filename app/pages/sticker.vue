@@ -165,7 +165,7 @@ function onSubmitLead(e: Event) {
     return
   }
 
-  // eslint-disable-next-line no-console
+   
   console.warn('Lead payload:', { ...form })
   showModal.value = false
 }
@@ -177,17 +177,25 @@ function onCta() { showModal.value = true }
 
 <template>
   <main class="sticker-page">
-    <h1 class="title">Демонстрация стикера</h1>
+    <h1 class="title">
+      Демонстрация стикера
+    </h1>
 
     <!-- Переключатель источника -->
-    <div class="source-toggle" role="tablist" aria-label="Источник картинок">
+    <div
+      class="source-toggle"
+      role="tablist"
+      aria-label="Источник картинок"
+    >
       <button
         role="tab"
         :aria-selected="selected === 'cats'"
         class="toggle-btn"
         :class="{ active: selected === 'cats' }"
         @click="onSelect('cats')"
-      >Котики</button>
+      >
+        Котики
+      </button>
 
       <button
         role="tab"
@@ -195,12 +203,20 @@ function onCta() { showModal.value = true }
         class="toggle-btn"
         :class="{ active: selected === 'dogs' }"
         @click="onSelect('dogs')"
-      >Пёсики</button>
+      >
+        Пёсики
+      </button>
     </div>
 
-    <section v-for="i in SECTIONS_COUNT" :key="i" class="section">
+    <section
+      v-for="i in SECTIONS_COUNT"
+      :key="i"
+      class="section"
+    >
       <h2>Раздел {{ i }}</h2>
-      <p class="content-paragraph">{{ TEXT_PARAGRAPH }}</p>
+      <p class="content-paragraph">
+        {{ TEXT_PARAGRAPH }}
+      </p>
     </section>
   </main>
 
@@ -216,8 +232,15 @@ function onCta() { showModal.value = true }
   />
 
   <!-- Модалка с формой -->
-  <ModalDialog v-model="showModal" :title="'Консультация<br>эксперта'">
-    <form class="lead-form" @submit="onSubmitLead" novalidate>
+  <ModalDialog
+    v-model="showModal"
+    :title="'Консультация<br>эксперта'"
+  >
+    <form
+      class="lead-form"
+      novalidate
+      @submit="onSubmitLead"
+    >
       <div class="lead-row">
         <label class="field">
           <span>Имя</span>
@@ -228,9 +251,17 @@ function onCta() { showModal.value = true }
             autocomplete="name"
             :aria-invalid="!!errors.name"
             :aria-errormessage="'err-name'"
+          >
+          <small
+            v-if="errors.name"
+            id="err-name"
+            class="error"
+          >{{ errors.name }}</small>
+          <small
+            v-else
+            class="error"
+            aria-hidden="true"
           />
-          <small v-if="errors.name" id="err-name" class="error">{{ errors.name }}</small>
-          <small v-else class="error" aria-hidden="true"></small>
         </label>
       </div>
 
@@ -246,9 +277,17 @@ function onCta() { showModal.value = true }
             placeholder="you@example.com"
             :aria-invalid="!!errors.email"
             :aria-errormessage="'err-email'"
+          >
+          <small
+            v-if="errors.email"
+            id="err-email"
+            class="error"
+          >{{ errors.email }}</small>
+          <small
+            v-else
+            class="error"
+            aria-hidden="true"
           />
-          <small v-if="errors.email" id="err-email" class="error">{{ errors.email }}</small>
-          <small v-else class="error" aria-hidden="true"></small>
         </label>
 
         <label class="field">
@@ -262,9 +301,17 @@ function onCta() { showModal.value = true }
             placeholder="+7 999 000-00-00"
             :aria-invalid="!!errors.phone"
             :aria-errormessage="'err-phone'"
+          >
+          <small
+            v-if="errors.phone"
+            id="err-phone"
+            class="error"
+          >{{ errors.phone }}</small>
+          <small
+            v-else
+            class="error"
+            aria-hidden="true"
           />
-          <small v-if="errors.phone" id="err-phone" class="error">{{ errors.phone }}</small>
-          <small v-else class="error" aria-hidden="true"></small>
         </label>
       </div>
 
@@ -278,13 +325,32 @@ function onCta() { showModal.value = true }
           :aria-invalid="!!errors.question"
           :aria-errormessage="'err-question'"
         />
-        <small v-if="errors.question" id="err-question" class="error">{{ errors.question }}</small>
-        <small v-else class="error" aria-hidden="true"></small>
+        <small
+          v-if="errors.question"
+          id="err-question"
+          class="error"
+        >{{ errors.question }}</small>
+        <small
+          v-else
+          class="error"
+          aria-hidden="true"
+        />
       </label>
 
       <div class="lead-actions">
-        <button type="submit" class="btn primary">Отправить</button>
-        <button type="button" class="btn" @click="showModal = false">Отмена</button>
+        <button
+          type="submit"
+          class="btn primary"
+        >
+          Отправить
+        </button>
+        <button
+          type="button"
+          class="btn"
+          @click="showModal = false"
+        >
+          Отмена
+        </button>
       </div>
     </form>
   </ModalDialog>
