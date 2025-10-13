@@ -128,6 +128,7 @@ const errors = reactive<Record<string, string>>({})
 
 const phoneRegex = /^\+?\d[\d\s()-]{6,}$/
 
+/* e-mail и phone «опциональны», но хотя бы одно из них обязательно */
 const LeadSchema = z.object({
   name: z.string().trim().min(1, 'Укажите имя'),
   email: z.string().trim().email('Некорректный e-mail').optional().or(z.literal('')),
@@ -135,7 +136,7 @@ const LeadSchema = z.object({
   question: z.string().trim().min(5, 'Опишите ваш вопрос подробнее'),
 }).refine(v => (v.email && v.email.length) || (v.phone && v.phone.length), {
   message: 'Укажите хотя бы один контакт',
-  path: ['email'],
+  path: ['email'], // подсказку показываем под e-mail
 })
 
 function resetErrors() {
@@ -149,8 +150,10 @@ function resetForm() {
   resetErrors()
 }
 
-// очищаем при закрытии модалки
-watch(showModal, (open) => { if (!open) resetForm() })
+/* при закрытии модалки — очищаем форму и ошибки */
+watch(showModal, (open) => {
+  if (!open) resetForm()
+})
 
 function onSubmitLead(e: Event) {
   e.preventDefault()
@@ -167,7 +170,7 @@ function onSubmitLead(e: Event) {
 
    
   console.warn('Lead payload:', { ...form })
-  showModal.value = false
+  showModal.value = false   
 }
 
 /* кнопки стикера */
@@ -176,12 +179,19 @@ function onCta() { showModal.value = true }
 </script>
 
 <template>
-  <main class="sticker-page">
-    <h1 class="title">
-      Демонстрация стикера
-    </h1>
+  <!-- Шапка страницы -->
+  <header
+    class="page-header"
+    role="banner"
+  >
+    <NuxtLink
+      to="/"
+      class="home-link"
+      aria-label="На главную"
+    >
+      Home
+    </NuxtLink>
 
-    <!-- Переключатель источника -->
     <div
       class="source-toggle"
       role="tablist"
@@ -207,6 +217,12 @@ function onCta() { showModal.value = true }
         Пёсики
       </button>
     </div>
+  </header>
+
+  <main class="sticker-page">
+    <h1 class="title">
+      Демонстрация стикера
+    </h1>
 
     <section
       v-for="i in SECTIONS_COUNT"
@@ -357,12 +373,44 @@ function onCta() { showModal.value = true }
 </template>
 
 <style lang="scss" scoped>
-/* переключатель источника */
-.source-toggle {
+/* ——— Шапка со ссылкой Home и переключателем ——— */
+.page-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 24px;
+  margin: 0 auto 12px;
+  max-width: 1440px;
+
+  background: color-mix(in srgb, var(--color-bg-panel) 82%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(16,24,40,.06);
+  border-radius: 0 0 16px 16px;
+}
+.home-link {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #111827;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1;
+  transition: filter .15s ease;
+}
+.home-link:hover { filter: brightness(.95); }
+
+/* Переключатель в шапке */
+.source-toggle {
+  display: inline-flex;
   gap: 8px;
-  justify-content: center;
-  margin: 0 0 16px;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(16, 24, 40, 0.05);
 }
 .toggle-btn {
   border: 0;
@@ -380,7 +428,7 @@ function onCta() { showModal.value = true }
   opacity: 1;
 }
 
-/* токены стикера */
+/* ——— Токены стикера ——— */
 :global(:root) {
   --sticker-right: 24px;
   --sticker-rail-w: 68px;
@@ -388,7 +436,7 @@ function onCta() { showModal.value = true }
   --sticker-gap: 16px;
 }
 
-/* контент страницы */
+/* ——— Контент страницы ——— */
 .content-paragraph { transition: padding-right 180ms ease; }
 
 .sticker-page {
@@ -419,21 +467,15 @@ function onCta() { showModal.value = true }
 }
 .section p { margin: 0; color: var(--color-text); opacity: .9; hyphens: auto; }
 
-/* форма модалки */
+/* ——— Форма модалки ——— */
 .lead-form { display: grid; gap: 12px; }
 
-.lead-row.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.lead-row:not(.two) { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.lead-row { display: grid; gap: 12px; }
+.lead-row.two { grid-template-columns: 1fr 1fr; }
 
-.field {
-  display: grid;
-  align-items: start;
-  gap: 6px;
-  font-size: 14px;
-  color: var(--color-text);
-}
+.field { display: grid; gap: 6px; }
 
-/* элементы ввода */
+.lead-form label { font-size: 14px; color: var(--color-text); opacity: .9; }
 .lead-form input,
 .lead-form textarea {
   border: 1px solid rgba(16,24,40,.16);
@@ -445,18 +487,31 @@ function onCta() { showModal.value = true }
 }
 .lead-form [aria-invalid="true"] { border-color: #fda29b; background: #fff7f7; }
 
+/* Резерв места под ошибку*/
 .error {
-  min-height: 18px;      
+  min-height: 18px;
   font-size: 12px;
   color: #b42318;
 }
 
-/* кнопки */
-.lead-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
-.btn { height: 40px; padding: 0 14px; border-radius: 10px; border: 0; cursor: pointer; background: #f2f4f7; }
+.lead-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.btn {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 0;
+  cursor: pointer;
+  background: #f2f4f7;
+}
 .btn.primary { background: #111827; color: #fff; }
 .btn:hover { filter: brightness(.98); }
 
-/* адаптив */
-@media (max-width: 520px) { .lead-row.two { grid-template-columns: 1fr; } }
+@media (max-width: 520px) {
+  .lead-row.two { grid-template-columns: 1fr; }
+}
 </style>
