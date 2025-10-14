@@ -1,14 +1,19 @@
 <script setup lang="ts">
+import { useRouter } from '#imports'
+const router = useRouter()
+function goSticker(src: 'cats' | 'dogs') {
+  router.push({ path: '/sticker', query: { src } })
+}
 </script>
 
 <template>
   <section class="hero">
     <video
-      class="bg"
+      class="hero-media"
       autoplay
       muted
-      loop
       playsinline
+      loop
       preload="metadata"
       poster="/media/hero.jpg"
     >
@@ -18,40 +23,67 @@
       >
     </video>
 
-    <div class="overlay" />
-
-    <div class="content">
+    <div class="hero-inner">
       <h1>Стикер-виджет: красиво, умно, быстро</h1>
-      <p>Загрузка аватарок, состояния, модалка, валидация, анимации и CI/CD — всё уже здесь.</p>
-      <div class="actions">
-        <NuxtLink
-          class="btn"
-          :to="{ path: '/sticker', query: { src: 'cats' } }"
+      <p class="lead">
+        Загрузка аватарок, состояния, модалка, валидация, анимации и CI/CD — всё уже здесь.
+      </p>
+
+      <div class="cta-row">
+        <button
+          class="pill"
+          @click="goSticker('cats')"
         >
           Котики
-        </NuxtLink>
-        <NuxtLink
-          class="btn ghost"
-          :to="{ path: '/sticker', query: { src: 'dogs' } }"
+        </button>
+        <button
+          class="pill"
+          @click="goSticker('dogs')"
         >
           Пёсики
-        </NuxtLink>
+        </button>
       </div>
     </div>
   </section>
 
-  <section class="demo-blurbs">
-    <article>
+  <section class="features">
+    <article class="card">
       <h3>Состояния и a11y</h3>
       <p>Скелетоны, ошибка, aria-атрибуты — из коробки.</p>
     </article>
-    <article>
+
+    <article class="card">
       <h3>Модалка + Zod</h3>
       <p>Валидация: e-mail/телефон (минимум один), без прыгающей вёрстки.</p>
     </article>
-    <article>
+
+    <article class="card">
       <h3>CI/CD</h3>
-      <p>Автосборка и деплой на GitHub Pages при каждом push в main.</p>
+      <p>Автосборка и деплой на GitHub Pages при каждом push в <code>main</code>.</p>
+    </article>
+
+    <article class="card">
+      <h3>Котики/Пёсики API</h3>
+      <p>
+        Универсальный <code>usePictures</code>: источник выбирается через query/переключатель.
+        Dog CEO и Cataas в одном интерфейсе.
+      </p>
+    </article>
+
+    <article class="card">
+      <h3>Умная вёрстка страницы</h3>
+      <p>
+        Параграфы рядом со стикером автоматически сужаются <em>только</em> в зоне
+        пересечения — ни пикселя лишнего.
+      </p>
+    </article>
+
+    <article class="card">
+      <h3>Responsive images + Prefetch</h3>
+      <p>
+        Готовность к <code>srcset</code>/<code>sizes</code> и предзагрузке при наведении —
+        быстрые переходы и меньше трафика.
+      </p>
     </article>
   </section>
 </template>
@@ -59,56 +91,92 @@
 <style scoped lang="scss">
 .hero {
   position: relative;
-  min-height: clamp(60vh, 72vh, 86vh);
-  display: grid; place-items: center;
+  border-radius: 18px;
   overflow: hidden;
-  border-bottom: 1px solid rgba(16,24,40,.08);
+  box-shadow: 0 20px 60px rgba(16,24,40,.35);
+  isolation: isolate;
+  min-height: clamp(460px, 72vh, 820px);
 }
-.bg {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; filter: saturate(1.05) contrast(1.02);
-}
-.overlay {
+.hero-media {
   position: absolute; inset: 0;
-  background:
-    radial-gradient(1200px 400px at 80% 20%, rgba(0,0,0,.18), transparent 60%),
-    linear-gradient(to bottom, rgba(0,0,0,.35), rgba(0,0,0,.15), rgba(0,0,0,.35));
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: saturate(1.1) contrast(1.05) brightness(.9);
 }
-.content {
+.hero-inner {
   position: relative; z-index: 1;
-  max-width: 900px; padding: 24px; text-align: center; color: #fff;
-  text-shadow: 0 2px 18px rgba(0,0,0,.35);
+  min-height: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(36px, 7vw, 80px) clamp(20px, 4vw, 48px);
+  text-align: center; color: #fff;
+  text-shadow: 0 4px 18px rgba(0,0,0,.35);
+  background: linear-gradient(to bottom, rgba(0,0,0,.18), rgba(0,0,0,.5));
 }
-.content h1 {
-  font-size: clamp(28px, 5vw, 56px);
-  line-height: 1.05; margin: 0 0 12px;
+.hero-inner h1 {
+  margin: 0 0 12px;
+  font-weight: 800;
+  font-size: clamp(28px, 5vw, 64px);
+  line-height: 1.08;
 }
-.content p {
-  font-size: clamp(16px, 2.2vw, 22px); opacity: .92; margin: 0 0 18px;
+.lead {
+  margin: 0 auto; max-width: 880px;
+  font-size: clamp(16px, 2.2vw, 20px);
+  opacity: .95;
 }
-.actions { display: inline-grid; grid-auto-flow: column; gap: 10px; }
-.btn {
-  display: inline-block; padding: 12px 16px; border-radius: 12px; text-decoration: none;
-  background: #111827; color: #fff; font-weight: 600; box-shadow: 0 10px 28px rgba(17,24,39,.25);
+.cta-row { margin-top: 20px; display: inline-flex; gap: 10px; }
+.pill {
+  height: 44px; padding: 0 16px; border: 0; border-radius: 999px;
+  background: rgba(255,255,255,.16); color: #fff; backdrop-filter: blur(4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  cursor: pointer; transition: transform .08s, background .15s, box-shadow .15s;
 }
-.btn.ghost {
-  background: rgba(255,255,255,.14); color: #fff; backdrop-filter: blur(6px);
-  box-shadow: 0 10px 28px rgba(17,24,39,.15); border: 1px solid rgba(255,255,255,.25);
-}
-.btn:hover { filter: brightness(.98); }
+.pill:hover { background: rgba(255,255,255,.22); box-shadow: 0 14px 36px rgba(0,0,0,.3); }
+.pill:active { transform: translateY(1px); }
 
-.demo-blurbs {
-  max-width: 1100px; margin: 28px auto; padding: 0 16px;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+/* FEATURES — двухрядная сетка при ширине ≥1024px */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
 }
-.demo-blurbs article {
-  background: var(--color-bg-panel); border: 1px solid rgba(16,24,40,.06);
-  border-radius: 16px; padding: 16px 18px; box-shadow: 0 6px 20px rgba(16,24,40,.08);
-}
-.demo-blurbs h3 { margin: 0 0 8px; font-size: 18px; }
-.demo-blurbs p { margin: 0; opacity: .9; }
 
-@media (max-width: 840px) {
-  .demo-blurbs { grid-template-columns: 1fr; }
+.card {
+  position: relative;
+  padding: 18px 16px;
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(255,255,255,.75), rgba(255,255,255,.55)) 
+    var(--color-bg-panel);
+  border: 1px solid rgba(16,24,40,.12);
+  box-shadow:
+    0 10px 26px rgba(16,24,40,.12),
+    inset 0 0 0 1px rgba(255,255,255,.35);
+  color: var(--color-text);
+  transition: transform .08s ease, box-shadow .18s ease, border-color .18s ease;
 }
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(16,24,40,.18);
+  box-shadow:
+    0 18px 36px rgba(16,24,40,.18),
+    inset 0 0 0 1px rgba(255,255,255,.5);
+}
+.card h3 { margin: 0 0 6px; font-size: 16px; line-height: 1.2; }
+.card p { margin: 0; opacity: .9; font-size: 14px; }
+.card code {
+  background: rgba(16,24,40,.08);
+  padding: 0 6px; border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .92em;
+}
+
+@media (min-width: 1024px) {
+  .features { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 420px) { .hero { min-height: 60vh; } }
 </style>
