@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
-import { useRoute, useRouter } from '#imports'
+import { useRoute } from '#imports'
 import { z } from 'zod'
 
 import { usePictures } from '~/composables/usePictures'
@@ -16,10 +16,8 @@ function pickSrc(q: unknown): PictureSource {
 }
 
 const route = useRoute()
-const router = useRouter()
 
 const src = ref<PictureSource>(pickSrc(route.query.src))
-const selected = ref<PictureSource>(src.value)
 
 const { images, loading, error, load, setSource } = usePictures(src.value, 3)
 onMounted(() => { load() })
@@ -30,19 +28,12 @@ watch(
     const next = pickSrc(q)
     if (next !== src.value) {
       src.value = next
-      selected.value = next
       setSource(next)
       load()
       schedule(updateAvoid)
     }
   }
 )
-
-async function onSelect(next: PictureSource) {
-  if (selected.value === next) return
-  selected.value = next
-  await router.replace({ query: { ...route.query, src: next } })
-}
 
 /* ——— утилиты для расчёта зоны стикера ——— */
 function cssPx(varName: string, fallback: number): number {
@@ -170,7 +161,7 @@ function onSubmitLead(e: Event) {
 
    
   console.warn('Lead payload:', { ...form })
-  showModal.value = false   
+  showModal.value = false  
 }
 
 /* кнопки стикера */
@@ -179,46 +170,6 @@ function onCta() { showModal.value = true }
 </script>
 
 <template>
-  <!-- Шапка страницы -->
-  <header
-    class="page-header"
-    role="banner"
-  >
-    <NuxtLink
-      to="/"
-      class="home-link"
-      aria-label="На главную"
-    >
-      Home
-    </NuxtLink>
-
-    <div
-      class="source-toggle"
-      role="tablist"
-      aria-label="Источник картинок"
-    >
-      <button
-        role="tab"
-        :aria-selected="selected === 'cats'"
-        class="toggle-btn"
-        :class="{ active: selected === 'cats' }"
-        @click="onSelect('cats')"
-      >
-        Котики
-      </button>
-
-      <button
-        role="tab"
-        :aria-selected="selected === 'dogs'"
-        class="toggle-btn"
-        :class="{ active: selected === 'dogs' }"
-        @click="onSelect('dogs')"
-      >
-        Пёсики
-      </button>
-    </div>
-  </header>
-
   <main class="sticker-page">
     <h1 class="title">
       Демонстрация стикера
@@ -373,61 +324,6 @@ function onCta() { showModal.value = true }
 </template>
 
 <style lang="scss" scoped>
-/* ——— Шапка со ссылкой Home и переключателем ——— */
-.page-header {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 24px;
-  margin: 0 auto 12px;
-  max-width: 1440px;
-
-  background: color-mix(in srgb, var(--color-bg-panel) 82%, transparent);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(16,24,40,.06);
-  border-radius: 0 0 16px 16px;
-}
-.home-link {
-  display: inline-block;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: #111827;
-  color: #fff;
-  text-decoration: none;
-  font-size: 14px;
-  line-height: 1;
-  transition: filter .15s ease;
-}
-.home-link:hover { filter: brightness(.95); }
-
-/* Переключатель в шапке */
-.source-toggle {
-  display: inline-flex;
-  gap: 8px;
-  padding: 4px;
-  border-radius: 12px;
-  background: rgba(16, 24, 40, 0.05);
-}
-.toggle-btn {
-  border: 0;
-  background: transparent;
-  padding: 8px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  color: var(--color-text);
-  opacity: .7;
-}
-.toggle-btn.active {
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(16,24,40,.08);
-  opacity: 1;
-}
-
 /* ——— Токены стикера ——— */
 :global(:root) {
   --sticker-right: 24px;
@@ -487,7 +383,7 @@ function onCta() { showModal.value = true }
 }
 .lead-form [aria-invalid="true"] { border-color: #fda29b; background: #fff7f7; }
 
-/* Резерв места под ошибку*/
+/* Резерв места под ошибку */
 .error {
   min-height: 18px;
   font-size: 12px;
