@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { useProducts } from '~/composables/useProducts'
 import { usePictures } from '~/composables/usePictures'
 import type { PictureSource } from '~/constants/api'
-import { STICKER_TITLE, CTA_LABEL, SECTIONS_COUNT, TEXT_PARAGRAPH } from '~/constants/content'
+import { STICKER_TITLE, CTA_LABEL } from '~/constants/content'
 import { AVOID_PADDING_DIVISOR } from '~/constants/ui'
 
 /* ——— источник картинок из query ——— */
@@ -190,8 +190,8 @@ function onCta() { showModal.value = true }
     </section>
 
     <section
-      v-else-if="prodLoading && !products.length"
       v-for="i in 3"
+      v-else-if="prodLoading && !products.length"
       :key="'skel-'+i"
       class="section section--skeleton"
     >
@@ -204,8 +204,8 @@ function onCta() { showModal.value = true }
     </section>
 
     <section
-      v-else
       v-for="p in products"
+      v-else
       :key="p.id"
       class="section section--product"
     >
