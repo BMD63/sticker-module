@@ -195,15 +195,23 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
 </template>
 
 <style lang="scss" scoped>
-
+:root { --elev: 0 14px 40px rgba(16,24,40,.14); }
+:global(:root) {
+  --cta-bg: #6a6d72;         /* фон кнопки  */
+  --cta-bg-hover: #0f172a;   /* фон при hover */
+  --cta-fg: #ffffff;         /* цвет текста */
+  --cta-height: 48px;        /* ВЫСОТА кнопки */
+  --cta-radius: 14px;        /* радиус скругления */
+}
 .sticker {
-  --rail-w: 68px;           
-  --panel-w: 280px;         
-  --box-h: 266px;      
-  --sticker-box-h: var(--box-h);     
-  --pad-collapsed: 2px 2px 16px 2px;
+  --rail-w: 68px;
+  --panel-w: 280px;
+  --box-h: 266px;
+  --sticker-box-h: var(--box-h);
+
+  --pad-collapsed: 3px 3px 18px 3px;
   --pad-expanded: 16px;
-  --radius-collapsed: 14px;  
+  --radius-collapsed: 14px;
   --radius-expanded: 20px;
 
   --avatar: 64px;
@@ -221,10 +229,7 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
   transform: translateY(-50%);
 }
 
-:root { 
-    --elev: 0 14px 40px rgba(16,24,40,.14); 
-}
-
+/* Стеклянный пузырь */
 .bubble {
   position: relative;
   transform-origin: right center;
@@ -232,200 +237,128 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
   height: var(--box-h);
   padding: var(--pad-collapsed);
   border-radius: var(--radius-collapsed) 0 0 var(--radius-collapsed);
-  background: var(--color-bg-rail);  
+  background: color-mix(in srgb, var(--color-bg-panel) 78%, transparent);
+  backdrop-filter: blur(8px) saturate(1.05);
+  border: 1px solid rgba(255,255,255,.18);
   box-shadow: var(--elev);
   overflow: hidden;
-  transition:
-    width var(--t-expand) ease-out,
-    padding var(--t-expand) ease-out,
-    background var(--t-expand) ease-out,
-    border-radius var(--t-expand) ease-out;
+  transition: width .22s ease-out, padding .22s ease-out, border-radius .22s ease-out, background .22s ease-out;
 }
 .sticker.expanded .bubble {
   width: var(--panel-w);
   padding: var(--pad-expanded);
   border-radius: var(--radius-expanded);
-  background: var(--color-bg-panel); 
+  background: color-mix(in srgb, var(--color-bg-panel) 86%, white 14%);
 }
 
+/* Rail (свёрнутое состояние) */
 .railContent {
-  position: absolute; 
-  inset: 0;
-  display: flex; 
-  flex-direction: column;
-  align-items: center; 
-  justify-content: center;
-  transition: opacity 150ms ease-out;
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: opacity 160ms ease-out;
 }
-.sticker.expanded .railContent { 
-    opacity: 0; pointer-events: none; 
-}
+.sticker.expanded .railContent { opacity: 0; pointer-events: none; }
 
 .avatar {
-  width: var(--avatar);
-  height: var(--avatar);
+  width: var(--avatar); height: var(--avatar);
   border-radius: var(--avatar-radius);
   background: #d9d9d9;
   box-sizing: border-box;
-  border: 3px solid var(--color-bg-rail);
+  border: 3px solid color-mix(in srgb, var(--color-bg-rail, #eef2f6) 82%, white 18%);
+  outline: 2px solid rgba(255,255,255,.45);
+  outline-offset: -2px;
 }
-.avatar + .avatar { 
-    margin-top: var(--overlap-v); 
-}
+.avatar + .avatar { margin-top: var(--overlap-v); }
 
+/* Стрелка */
 .arrow {
-  width: 24px; 
-  height: 24px;
-  border: 0; 
-  background: transparent; 
-  padding: 0;
-  display: grid; 
-  place-items: center; 
-  cursor: pointer;
+  width: 28px; height: 28px;
   margin-top: 32px;
+  border: 0; background: rgba(0,0,0,.08);
+  color: var(--color-text);
+  border-radius: 999px;
+  display: grid; place-items: center;
+  cursor: pointer;
+  transition: filter .15s, transform .18s;
 }
-.chevron { 
-    width: 16px; 
-    height: 16px; 
-    color: var(--color-text);
-    opacity: .4; 
-    transition: opacity .15s, 
-    transform .18s; 
-}
-.arrow:hover .chevron { 
-    opacity: 1; 
-}
-:deep([aria-pressed="true"]) .chevron { 
-    transform: rotate(180deg); 
-}
+.arrow:hover { filter: brightness(.96); transform: translateY(-1px); }
+.chevron { width: 16px; height: 16px; opacity: .6; }
 
+/* Панель (раскрытое состояние) */
 .panelContent {
   position: absolute; 
   inset: 0;
   display: grid; 
-  grid-auto-rows: max-content;
-  justify-items: center; 
-  align-content: start;
+  grid-auto-rows: max-content; 
+  justify-items: center; align-content: start;
   opacity: 0; 
   pointer-events: none; 
-  transition: opacity 150ms ease-out;
+  transition: opacity 160ms ease-out;
+  row-gap: 10px;
 }
-.sticker.expanded .panelContent { 
-    opacity: 1; pointer-events: auto; 
-}
+.sticker.expanded .panelContent { opacity: 1; pointer-events: auto; }
 
 .title {
-  width: 216px; 
-  margin: 8px auto 16px; 
-  text-align: center;
-  font-weight: 600; 
-  font-size: 23px; 
-  line-height: 1; 
+  width: 216px; margin: 6px auto 14px; text-align: center;
+  font-weight: 700; font-size: 23px; line-height: 1;
   color: var(--color-text);
 }
 
-.faces { 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    margin: 8px 0 24px; 
+/* лица/эксперты */
+.faces {
+  display: flex; justify-content: center; align-items: flex-start;
+  gap: 12px; margin: 8px 0 18px;
 }
-.face  { 
-    width: var(--face); 
-    height: var(--face); 
-    border-radius: var(--face-radius); 
-    background: #d9d9d9; 
-    box-sizing: border-box;
-    border: 3px solid var(--color-bg-rail); 
-}
-.face + .face { 
-    margin-left: var(--overlap-h); 
-}
-
-.cta {
-  display: inline-block; 
-  width: 216px; 
-  height: 56px; 
-  line-height: 56px; 
-  text-align: center;
-  font-weight: 500; 
-  font-size: 16px; 
-  color: var(--color-text); 
-  border: 0; 
-  -webkit-appearance: none;
-  appearance: none;
-  outline: none;
-  background-clip: padding-box;
-  border-radius: 16px; 
-  background: var(--color-btn); 
-  box-shadow: 0 6px 24px rgba(16,24,40,.08); 
-  cursor: pointer;
-}
-
-@keyframes bubble-pop {
-    0%   { transform: scale(0.965); box-shadow: 0 8px 24px rgba(16,24,40,.10); }
-    60%  { transform: scale(1.04);  box-shadow: 0 20px 48px rgba(16,24,40,.18); }
-    100% { transform: scale(1.00);  box-shadow: var(--elev); }
-}
-.sticker.expanded .bubble { 
-    animation: bubble-pop 2240ms cubic-bezier(.2,.8,.2,1) both; 
-}
-
-.panelContent > * {
-  transform: translateY(8px);
-  opacity: 0;
-  transition: transform 240ms cubic-bezier(.2,.8,.2,1), opacity 240ms ease;
-}
-.sticker.expanded .panelContent > * { transform: translateY(0); opacity: 1; }
-.panelContent .title { transition-delay: 40ms; }
-.panelContent .faces { transition-delay: 90ms; }
-.panelContent .cta   { transition-delay: 140ms; }
-
-@media (hover: hover) {
-  .sticker:hover .bubble {
-    width: var(--panel-w);
-    padding: var(--pad-expanded);
-    border-radius: var(--radius-expanded);
-    background: #F7F9FC;
-    animation: bubble-pop var(--t-pop) var(--ease-pop) both;
-  }
-  .sticker:hover .railContent { opacity: 0; pointer-events: none; }
-  .sticker:hover .panelContent { opacity: 1; pointer-events: auto; }
-}
-
-.skeleton {
-  position: relative;
-  overflow: hidden;
-  background: #e9edf3;
-}
-.skeleton::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
-  animation: shimmer 1.2s infinite;
-}
-@keyframes shimmer {
-  100% { transform: translateX(100%); }
-}
-.error-badge {
-  width: 40px; height: 40px;
-  border-radius: 12px;
-  display: grid; place-items: center;
-  font-weight: 700;
-  color: #b42318;          
-  background: #fee4e2;     
-  border: 2px solid #fda29b;
+.face-card { display: grid; justify-items: center; gap: 6px; width: 84px; }
+.face {
+  width: var(--face); height: var(--face);
+  border-radius: var(--face-radius);
+  background: #d9d9d9;
   box-sizing: border-box;
-  margin-top: 8px;
+  border: 3px solid color-mix(in srgb, var(--color-bg-rail, #eef2f6) 82%, white 18%);
+  outline: 2px solid rgba(255,255,255,.55);
+  outline-offset: -2px;
 }
+.face + .face { margin-left: var(--overlap-h); }
+.face-name { font-size: 12px; line-height: 1.2; text-align: center; max-width: 84px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--color-text); opacity: .9; }
 
-.error-text {
-  margin: 8px 0 16px;
-  font-size: 14px;
-  color: #b42318;
+/* CTA — нейтральная, в тему */
+.cta {
+  width: 216px;
+  height: var(--cta-height);
+  line-height: var(--cta-height);   
+  border: 0;
+  border-radius: var(--cta-radius);
+  background: var(--cta-bg);
+  color: var(--cta-fg);
+  font-weight: 600;
+  font-size: 15px;
   text-align: center;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(16,24,40,.10);
+  transition: filter .15s ease, transform .06s ease;
+  margin-top: 8px;                   
 }
+.cta:hover { filter: brightness(.98); background: var(--cta-bg-hover); }
+.cta:active { transform: translateY(1px); }
 
+/* Скелетоны/ошибки */
+.skeleton { position: relative; overflow: hidden; background: #e9edf3; }
+.skeleton::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent); animation: shimmer 1.2s infinite; }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+.error-badge {
+  width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+  font-weight: 700; color: #b42318; background: #fee4e2; border: 2px solid #fda29b;
+  box-sizing: border-box; margin-top: 8px;
+}
+.error-text { margin: 8px 0 16px; font-size: 14px; color: #b42318; text-align: center; }
+
+/* Поп-анимация */
+@keyframes bubble-pop {
+  0% { transform: scale(.965); box-shadow: 0 8px 24px rgba(16,24,40,.10); }
+  60% { transform: scale(1.04); box-shadow: 0 20px 48px rgba(16,24,40,.18); }
+  100% { transform: scale(1); box-shadow: var(--elev); }
+}
+.sticker.expanded .bubble { animation: bubble-pop 224ms cubic-bezier(.2,.8,.2,1) both; }
 </style>
