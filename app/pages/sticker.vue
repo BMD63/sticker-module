@@ -2,7 +2,7 @@
 import { ref, reactive, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useRoute } from '#imports'
 import { z } from 'zod'
-
+import { useProducts } from '~/composables/useProducts'
 import { usePictures } from '~/composables/usePictures'
 import type { PictureSource } from '~/constants/api'
 import { STICKER_TITLE, CTA_LABEL, SECTIONS_COUNT, TEXT_PARAGRAPH } from '~/constants/content'
@@ -16,11 +16,15 @@ function pickSrc(q: unknown): PictureSource {
 }
 
 const route = useRoute()
+const { products, loading: prodLoading, error: prodError, load: loadProducts } = useProducts()
 
 const src = ref<PictureSource>(pickSrc(route.query.src))
 
 const { images, loading, error, load, setSource } = usePictures(src.value, 3)
-onMounted(() => { load() })
+onMounted(() => {
+   load() 
+   loadProducts()
+  })
 
 watch(
   () => route.query.src,
@@ -176,14 +180,50 @@ function onCta() { showModal.value = true }
     </h1>
 
     <section
-      v-for="i in SECTIONS_COUNT"
-      :key="i"
+      v-if="prodError"
       class="section"
     >
-      <h2>Раздел {{ i }}</h2>
+      <h2>Ошибка загрузки</h2>
       <p class="content-paragraph">
-        {{ TEXT_PARAGRAPH }}
+        {{ prodError }}
       </p>
+    </section>
+
+    <section
+      v-else-if="prodLoading && !products.length"
+      v-for="i in 3"
+      :key="'skel-'+i"
+      class="section section--skeleton"
+    >
+      <div class="thumb skeleton" />
+      <div class="body">
+        <h2 class="skeleton-line" />
+        <p class="content-paragraph skeleton-line" />
+        <p class="content-paragraph skeleton-line short" />
+      </div>
+    </section>
+
+    <section
+      v-else
+      v-for="p in products"
+      :key="p.id"
+      class="section section--product"
+    >
+      <img
+        class="thumb"
+        :src="p.image"
+        :alt="p.title"
+        width="120"
+        height="120"
+        loading="lazy"
+        decoding="async"
+      >
+      <div class="body">
+        <h2>{{ p.title }}</h2>
+        <p class="content-paragraph">
+          {{ p.description }}
+        </p>
+      </div>
     </section>
   </main>
 
@@ -406,6 +446,73 @@ function onCta() { showModal.value = true }
 }
 .btn.primary { background: #111827; color: #fff; }
 .btn:hover { filter: brightness(.98); }
+
+.section {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: start;
+  gap: 16px;
+  min-height: 160px; /* ровная высота по сетке, но не «бетон» */
+}
+
+.section .thumb {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #e9edf3;
+  box-shadow: 0 2px 10px rgba(16,24,40,.06) inset;
+}
+
+.section .body {
+  display: grid;
+  gap: 8px;
+}
+
+.section--skeleton .skeleton,
+.section--skeleton .skeleton-line {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #e9edf3;
+}
+.section--skeleton .skeleton::after,
+.section--skeleton .skeleton-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+  animation: shimmer 1.1s infinite;
+}
+.section--skeleton .skeleton-line {
+  height: 16px;
+}
+.section--skeleton .skeleton-line.short {
+  width: 60%;
+}
+
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+.section .content-paragraph {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* мобильная адаптация: картинка сверху, текст снизу */
+@media (max-width: 640px) {
+  .section {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    min-height: 0;
+  }
+  .section .thumb {
+    width: 100%;
+    height: 180px;
+  }
+}
 
 @media (max-width: 520px) {
   .lead-row.two { grid-template-columns: 1fr; }

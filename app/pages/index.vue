@@ -28,6 +28,10 @@ function goSticker(src: 'cats' | 'dogs') {
       <p class="lead">
         Загрузка аватарок, состояния, модалка, валидация, анимации и CI/CD — всё уже здесь.
       </p>
+      <br>
+      <p class="lead">
+        Бонус: котики и пёсики из открытых API.
+      </p>
 
       <div class="cta-row">
         <button

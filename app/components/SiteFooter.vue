@@ -1,7 +1,7 @@
 <template>
   <footer class="site-footer">
     <div class="wrap">
-      <p>© {{ new Date().getFullYear() }} Твой супер-стикер. Разработчик: Ты :)</p>
+      <p>© {{ new Date().getFullYear() }} Chehcet Sergey   https://t.me/s_chechet  </p>
     </div>
   </footer>
 </template>
