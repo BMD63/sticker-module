@@ -117,6 +117,7 @@ const form = reactive({
   email: '',
   phone: '',
   question: '',
+  consent: false,
 })
 
 const errors = reactive<Record<string, string>>({})
@@ -129,9 +130,12 @@ const LeadSchema = z.object({
   email: z.string().trim().email('Некорректный e-mail').optional().or(z.literal('')),
   phone: z.string().trim().regex(phoneRegex, 'Некорректный телефон').optional().or(z.literal('')),
   question: z.string().trim().min(5, 'Опишите ваш вопрос подробнее'),
+  consent: z.boolean().refine(v => v === true, {
+    message: 'Нужно согласие на обработку персональных данных',
+  }),
 }).refine(v => (v.email && v.email.length) || (v.phone && v.phone.length), {
   message: 'Укажите хотя бы один контакт',
-  path: ['email'], // подсказку показываем под e-mail
+  path: ['email'],
 })
 
 function resetErrors() {
@@ -142,6 +146,7 @@ function resetForm() {
   form.email = ''
   form.phone = ''
   form.question = ''
+  form.consent = false
   resetErrors()
 }
 
@@ -343,6 +348,32 @@ function onCta() { showModal.value = true }
           aria-hidden="true"
         />
       </label>
+      <label class="chk">
+        <input
+          v-model="form.consent"
+          type="checkbox"
+          name="consent"
+          :aria-invalid="!!errors.consent"
+          :aria-errormessage="'err-consent'"
+        >
+        <span class="chk-text">
+          Я соглашаюсь с <NuxtLink
+            to="/privacy"
+            target="_blank"
+            rel="noopener"
+          >политикой обработки персональных данных</NuxtLink>
+        </span>
+      </label>
+      <small
+        v-if="errors.consent"
+        id="err-consent"
+        class="error"
+      >{{ errors.consent }}</small>
+      <small
+        v-else
+        class="error"
+        aria-hidden="true"
+      />
 
       <div class="lead-actions">
         <button
@@ -369,6 +400,8 @@ function onCta() { showModal.value = true }
   --sticker-rail-w: 68px;
   --sticker-panel-w: 280px;
   --sticker-gap: 16px;
+
+  --primary-600: #676b75; /* кнопка */
 
   --card-bg: color-mix(in srgb, var(--color-bg-panel) 88%, transparent);
   --card-border: rgba(16,24,40,.08);
@@ -494,12 +527,37 @@ function onCta() { showModal.value = true }
   background: #fff;
   outline: none;
 }
+
+.chk {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  align-items: start;
+  gap: 10px;
+  margin-top: 4px;
+}
+.chk input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: #111827; 
+}
+.chk-text {
+  font-size: 14px;
+  color: var(--color-text);
+  opacity: .9;
+}
+.chk-text a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .lead-form [aria-invalid="true"] { border-color: #fda29b; background: #fff7f7; }
 
 .error { min-height: 18px; font-size: 12px; color: #b42318; }
 .lead-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
 .btn { height: 40px; padding: 0 14px; border-radius: 10px; border: 0; cursor: pointer; background: #f2f4f7; }
-.btn.primary { background: #111827; color: #fff; }
+.btn.primary { background: var(--primary-600); color: #fff; }
 .btn:hover { filter: brightness(.98); }
 
 @media (max-width: 520px) { .lead-row.two { grid-template-columns: 1fr; } }

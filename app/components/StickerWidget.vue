@@ -304,23 +304,28 @@ const emit = defineEmits<{ (e: 'cta'): void; (e: 'retry'): void }>()
   color: var(--color-text);
 }
 
-/* лица/эксперты */
+
 .faces {
-  display: flex; justify-content: center; align-items: flex-start;
-  gap: 12px; margin: 8px 0 18px;
+  display: flex; 
+  justify-content: center; 
+  align-items: flex-start; 
+  margin: 8px 0 18px;
 }
-.face-card { display: grid; justify-items: center; gap: 6px; width: 84px; }
+
 .face {
   width: var(--face); height: var(--face);
   border-radius: var(--face-radius);
   background: #d9d9d9;
   box-sizing: border-box;
   border: 3px solid color-mix(in srgb, var(--color-bg-rail, #eef2f6) 82%, white 18%);
-  outline: 2px solid rgba(255,255,255,.55);
-  outline-offset: -2px;
 }
 .face + .face { margin-left: var(--overlap-h); }
 .face-name { font-size: 12px; line-height: 1.2; text-align: center; max-width: 84px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--color-text); opacity: .9; }
+
+
+.sticker.expanded .face {
+  border-color: var(--color-bg-panel);
+}
 
 /* CTA — нейтральная, в тему */
 .cta {
