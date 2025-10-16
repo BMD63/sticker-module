@@ -555,10 +555,35 @@ function onCta() { showModal.value = true }
 .lead-form [aria-invalid="true"] { border-color: #fda29b; background: #fff7f7; }
 
 .error { min-height: 18px; font-size: 12px; color: #b42318; }
-.lead-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
-.btn { height: 40px; padding: 0 14px; border-radius: 10px; border: 0; cursor: pointer; background: #f2f4f7; }
-.btn.primary { background: var(--primary-600); color: #fff; }
-.btn:hover { filter: brightness(.98); }
+.lead-actions { 
+  display: flex; 
+  gap: 8px; 
+  justify-content: flex-end; 
+  margin-top: 8px; 
+}
+.btn { 
+  height: var(--cta-height);
+  line-height: var(--cta-height); 
+  padding: 0 16px;
+  border-radius: var(--cta-radius);
+  border: 0;
+  cursor: pointer;
+  background: #f2f4f7;            
+  color: var(--color-text);
+  transition: filter .15s ease; 
+}
+.btn.primary { 
+  background: var(--cta-bg);
+  color: var(--cta-fg); 
+}
+
+.btn.primary:hover {
+  background: var(--cta-bg-hover);
+}
+
+.btn:hover { 
+  filter: brightness(.98); 
+}
 
 @media (max-width: 520px) { .lead-row.two { grid-template-columns: 1fr; } }
 </style>
