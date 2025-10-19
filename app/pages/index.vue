@@ -83,10 +83,10 @@ function goSticker(src: 'cats' | 'dogs') {
     </article>
 
     <article class="card">
-      <h3>Responsive images + Prefetch</h3>
+      <h3>Lazy images + decoding</h3>
       <p>
-        Готовность к <code>srcset</code>/<code>sizes</code> и предзагрузке при наведении —
-        быстрые переходы и меньше трафика.
+        Отложенная загрузка (<code>loading="lazy"</code>) и <code>decoding="async</code> +
+        скелетоны — быстрый первый рендер без рывков.
       </p>
     </article>
   </section>
