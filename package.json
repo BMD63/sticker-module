@@ -31,5 +31,6 @@
     "sass": "^1.93.2",
     "vitest": "^3.2.4",
     "vue-eslint-parser": "^10.2.0"
-  }
+  },
+  "license": "MIT" 
 }
